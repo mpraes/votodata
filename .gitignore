@@ -1,0 +1,5 @@
+.venv/
+
+.env
+
+src/etl/metadados_tse/out/
