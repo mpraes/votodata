@@ -3,3 +3,6 @@
 .env
 
 src/etl/metadados_tse/out/
+
+__pycache__/
+*.py[cod]
