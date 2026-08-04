@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "macros.html" import h2_info %}
+{% block title %}Sobre · Metadados TSE{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Sobre este catálogo</h1>
+  <p>Interface de leitura do schema PostgreSQL <code>dados_tse</code>, alimentado pelo ETL em <code>src/etl/metadados_tse</code>.</p>
+</section>
+
+<article class="prose">
+  {{ h2_info("pipeline", "Pipeline", "Etapas que alimentam o schema: extract → load → probe → enrich-files. Esta página só lê o resultado no Postgres.") }}
+  <ul>
+    <li><strong>extract</strong> — API CKAN + HTML fallback → JSON local</li>
+    <li><strong>load</strong> — upsert no Postgres (no-op por <code>metadata_hash</code>)</li>
+    <li><strong>probe</strong> — HEAD na CDN (<code>status_link</code>, tamanho, ETag)</li>
+    <li><strong>enrich-files</strong> — download + SHA-256 + colunas CSV (datasets prioritários)</li>
+  </ul>
+
+  {{ h2_info("convencoes", "Convenções dos arquivos TSE", "Regras típicas dos leia-me.pdf oficiais. Ainda não parseamos o PDF; a lista é documentação manual para quem for ler CSV.") }}
+  <p>Resumo das regras recorrentes nos <code>leia-me.pdf</code> (parse automático ainda não entra neste MVP):</p>
+  <ul>
+    <li>Codificação <strong>Latin-1</strong></li>
+    <li>Campos entre aspas, separados por <strong>ponto e vírgula</strong></li>
+    <li><code>#NULO</code> = vazio; numéricos equivalentes a <code>-1</code></li>
+    <li><code>#NE</code> = informação não existia na época; numéricos <code>-3</code></li>
+    <li>UF pode incluir <code>BR</code> (nacional), <code>VT</code> (trânsito), <code>ZZ</code> (exterior)</li>
+  </ul>
+
+  {{ h2_info("operacao", "Operação", "Como subir o catálogo no homelab. Sem login no MVP — acesso via localhost ou Tailscale.") }}
+  <p>Subir o app (homelab, bind local):</p>
+  <p><code>make web</code> → <a href="http://127.0.0.1:8000">http://127.0.0.1:8000</a></p>
+  <p>Sem autenticação neste MVP — use Tailscale / bind em <code>127.0.0.1</code>.</p>
+</article>
+{% endblock %}

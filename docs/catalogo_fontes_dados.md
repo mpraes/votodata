@@ -32,6 +32,8 @@ Os dados alimentados no VotoData são organizados em três camadas operacionais 
 
 Pipeline: [`src/etl/metadados_tse/`](../src/etl/metadados_tse/) → schema PostgreSQL `dados_tse`.
 
+Catálogo explorável (read-only): [`src/web/`](../src/web/) — `make web` → [http://127.0.0.1:8000/tse](http://127.0.0.1:8000/tse).
+
 | Indicador | Valor (última carga completa) | Onde está |
 | --- | --- | --- |
 | Datasets no inventário CKAN | **172** | `tse_datasets_inventory.json` |
@@ -45,11 +47,12 @@ Pipeline: [`src/etl/metadados_tse/`](../src/etl/metadados_tse/) → schema Postg
 
 Ainda **não** estão neste pipeline (e não devem ser confundidos com “metadados faltando”):
 
-- Conteúdo binário dos ZIPs/CSVs (download futuro).
+- Conteúdo binário dos ZIPs/CSVs no data lake (bronze/MinIO futuro); cache local do enrich cobre só prioritários.
 - Páginas institucionais fora do CKAN (`tse.jus.br/eleicoes/...`, estatísticas HTML).
 - API comunitária de divulgação de candidaturas (`meucandidato.github.io`).
-- Preenchimento de `hash_conteudo` / probe de `status_link` / `recurso_coluna` (schema de CSV).
+- Descrições de colunas a partir de `leia-me.pdf` (schema CSV dos prioritários já entra via enrich).
 
+Já cobertos por `probe` / `enrich-files`: `status_link` (HEAD na CDN), `hash_conteudo` e `recurso_coluna` nos datasets prioritários 2026.
 ### Campos de metadados capturados por dataset
 
 | Categoria | Campos |

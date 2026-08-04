@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "macros.html" import h2_info %}
+{% block title %}VotoData{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>VotoData</h1>
+  <p>Plataforma viva de dados político-eleitorais. O catálogo de metadados do TSE é a primeira seção publicada; outras fontes entram em seguida.</p>
+  <div class="cta-row">
+    <a class="btn" href="/tse">Abrir metadados TSE</a>
+    <a class="btn btn-ghost" href="/tse/health">Saúde dos arquivos</a>
+  </div>
+</section>
+
+<section class="section">
+  {{ h2_info("secoes", "Seções", "Áreas do produto web. Hoje só Metadados TSE está ativa; Transparência e Notícias entram depois, no mesmo app.") }}
+  <p class="lede">Uma superfície web para o homelab — ETL permanece em <code>src/etl/</code>.</p>
+  <ul class="coming-soon">
+    <li><a href="/tse">Metadados TSE</a> — catálogo <code>dados_tse</code> (ativo)</li>
+    <li>Portal da Transparência — em breve</li>
+    <li>Notícias / contexto — em breve</li>
+  </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% from "macros.html" import h2_info %}
+{% block title %}Metadados TSE · VotoData{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Metadados TSE</h1>
+  <p>Mapa do repositório de Dados Abertos do Tribunal Superior Eleitoral: datasets, recursos, cadência e integridade dos arquivos na CDN.</p>
+  <div class="cta-row">
+    <a class="btn" href="/tse/groups">Explorar grupos</a>
+    <a class="btn btn-ghost" href="/tse/health">Saúde</a>
+  </div>
+</section>
+
+<div class="metrics" aria-label="Indicadores do catálogo">
+  <div class="metric">
+    <div class="value">{{ summary.counts.datasets }}</div>
+    <div class="label">Datasets</div>
+  </div>
+  <div class="metric">
+    <div class="value">{{ summary.counts.resources }}</div>
+    <div class="label">Recursos</div>
+  </div>
+  <div class="metric">
+    <div class="value">{{ summary.counts.columns }}</div>
+    <div class="label">Colunas indexadas</div>
+  </div>
+  <div class="metric">
+    <div class="value">{{ summary.counts.resources_with_sha }}</div>
+    <div class="label">Com SHA-256</div>
+  </div>
+</div>
+
+<section class="section">
+  {{ h2_info("prioritarios", "Prioritários 2026", "Conjunto foco do enrich: download na CDN, SHA-256 e dicionário de colunas CSV. São os datasets mais relevantes para a eleição.") }}
+  <p class="lede">Datasets com enrich de arquivo (download + hash + dicionário de colunas).</p>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Slug</th>
+        <th>Título</th>
+        <th>Recursos</th>
+        <th>Com SHA</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in summary.priorities %}
+      <tr>
+        <td><a class="mono" href="/tse/datasets/{{ row.name }}">{{ row.name }}</a></td>
+        <td>{{ row.titulo }}</td>
+        <td class="mono">{{ row.num_resources }}</td>
+        <td class="mono">{{ row.with_sha }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">Nenhum prioritário encontrado no banco.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="section">
+  {{ h2_info("cadencia", "Cadência declarada", "Frequência de atualização que o TSE informa no portal (campo operacional). Não é o ritmo do nosso ETL.") }}
+  <p class="lede">Frequência de atualização informada no portal.</p>
+  {% set max_f = summary.frequencies[0].count if summary.frequencies else 1 %}
+  <ul class="bar-list">
+    {% for row in summary.frequencies[:8] %}
+    <li>
+      <div>
+        <div>{{ row.label }}</div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (row.count / max_f * 100)|round }}%"></div></div>
+      </div>
+      <span class="mono">{{ row.count }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section">
+  {{ h2_info("areas", "Áreas gestoras", "Unidade do TSE responsável pelo dataset (AGEL, ASEPA, etc.), capturada dos metadados de negócio.") }}
+  <ul class="bar-list">
+    {% set max_a = summary.areas[0].count if summary.areas else 1 %}
+    {% for row in summary.areas[:6] %}
+    <li>
+      <div>
+        <div>{{ row.label }}</div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (row.count / max_a * 100)|round }}%"></div></div>
+      </div>
+      <span class="mono">{{ row.count }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section">
+  {{ h2_info("execucoes", "Últimas execuções", "Histórico recente de stages do pipeline (extract, load, probe, enrich) registrados em dados_tse.pipeline_run.") }}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Stage</th>
+        <th>Status</th>
+        <th>Início</th>
+        <th>Ok</th>
+        <th>Fail</th>
+        <th>Skip</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for run in summary.last_runs %}
+      <tr>
+        <td class="mono">{{ run.stage }}</td>
+        <td>{{ run.status }}</td>
+        <td class="mono">{{ run.started_at }}</td>
+        <td class="mono">{{ run.datasets_ok }}</td>
+        <td class="mono">{{ run.datasets_fail }}</td>
+        <td class="mono">{{ run.datasets_skipped }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

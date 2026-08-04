@@ -1,7 +1,8 @@
-.PHONY: help smoke-models ddl check-conn smoke-api smoke-transform smoke-validate smoke-persist extract-meta load-meta probe-meta enrich-files-meta
+.PHONY: help smoke-models ddl check-conn smoke-api smoke-transform smoke-validate smoke-persist extract-meta load-meta probe-meta enrich-files-meta web
 
 PYTHON := uv run python
 PIPE   := src/etl/metadados_tse
+WEB    := src/web
 
 help:
 	@echo "smoke-models  - valida import dos models Pydantic"
@@ -15,6 +16,7 @@ help:
 	@echo "smoke-html      - valida extração de informações adicionais"
 	@echo "probe-meta      - HEAD nos recursos (status/tamanho/etag)"
 	@echo "enrich-files-meta - download+SHA+columns for priority datasets"
+	@echo "web             - sobe catálogo em http://127.0.0.1:8000"
 
 check-conn:
 	@set -a && . ./.env && set +a && \
@@ -64,3 +66,6 @@ probe-meta:
 
 enrich-files-meta:
 	set -a && . ./.env && set +a && cd $(PIPE) && uv run --project ../.. python cli.py enrich-files $(ARGS)
+
+web:
+	set -a && . ./.env && set +a && cd $(WEB) && uv run --project ../.. uvicorn app:app --reload --host 127.0.0.1 --port 8000

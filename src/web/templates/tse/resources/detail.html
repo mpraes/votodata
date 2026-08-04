@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from "macros.html" import h2_info %}
+{% block title %}{{ resource.nome or resource.id }} · VotoData{% endblock %}
+{% block content %}
+<p class="crumb">
+  <a href="/tse">Metadados TSE</a> /
+  <a href="/tse/datasets/{{ resource.dataset_name }}">{{ resource.dataset_name }}</a> /
+  recurso
+</p>
+
+<section class="hero">
+  <h1>{{ resource.nome or resource.id }}</h1>
+  <p class="mono">{{ resource.dataset_titulo }}</p>
+</section>
+
+<div class="stack">
+  <section>
+    {{ h2_info("arquivo", "Arquivo", "Metadados do arquivo na CDN: disponibilidade (probe), hash de conteúdo (enrich) e caminho de cache local, se existir.") }}
+    <dl class="kv">
+      <dt>Status</dt><dd><span class="badge badge-{{ resource.status_link }}">{{ resource.status_link }}</span></dd>
+      <dt>URL</dt><dd><a href="{{ resource.url }}">{{ resource.url }}</a></dd>
+      <dt>Formato</dt><dd class="mono">{{ resource.formato or "—" }} / {{ resource.mimetype or "—" }}</dd>
+      <dt>Tamanho</dt><dd class="mono">{{ resource.tamanho_bytes if resource.tamanho_bytes is not none else "—" }}</dd>
+      <dt>ETag</dt><dd class="mono">{{ resource.etag or "—" }}</dd>
+      <dt>Hash</dt><dd class="mono">{{ resource.hash_conteudo or "—" }}</dd>
+      <dt>Probe</dt><dd class="mono">{{ resource.last_probed_at or "—" }}</dd>
+      <dt>Enrich</dt><dd class="mono">{{ resource.last_enriched_at or "—" }}</dd>
+      <dt>Cache local</dt><dd class="mono">{{ resource.local_path or "—" }}</dd>
+    </dl>
+  </section>
+
+  <section>
+    {{ h2_info("colunas", "Colunas (" ~ (columns|length) ~ ")", "Dicionário de colunas lido do cabeçalho CSV no enrich. Sem amostra de linhas (PII). Descrições de leia-me.pdf ainda não entram.") }}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nome</th>
+          <th>Tipo</th>
+          <th>Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in columns %}
+        <tr>
+          <td class="mono">{{ c.ordem }}</td>
+          <td class="mono">{{ c.nome_coluna }}</td>
+          <td class="mono">{{ c.tipo_dado_declarado or "—" }}</td>
+          <td>{{ c.descricao or "—" }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4">Sem dicionário de colunas (enrich ainda não aplicou este recurso).</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+{% endblock %}
