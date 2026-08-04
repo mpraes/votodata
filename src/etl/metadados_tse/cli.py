@@ -91,6 +91,20 @@ def cmd_load(args: argparse.Namespace) -> int:
     print(result)
     return 0 if result["fail"] == 0 else 1
 
+def cmd_probe(args: argparse.Namespace) -> int:
+    from probe_resources import probe_resources
+
+    result = probe_resources(dataset_name=args.name, limit=args.limit)
+    print(result)
+    return 0 if result["fail"] == 0 else 1
+
+def cmd_enrich_files(args: argparse.Namespace) -> int:
+    from enrich_files import enrich_files
+
+    result = enrich_files(dataset_name=args.name)
+    print(result)
+    return 0 if result["fail"] == 0 else 1
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="ETL metadados TSE")
     sub = p.add_subparsers(dest="command", required=True)
@@ -103,7 +117,15 @@ def build_parser() -> argparse.ArgumentParser:
     l = sub.add_parser("load", help="Carrega metadados para Postgres")
     l.add_argument("--name", help="Slug de um dataset")
     l.set_defaults(func=cmd_load)
+    
+    p_probe = sub.add_parser("probe", help="HEAD nos recursos (status/tamanho/etag)")
+    p_probe.add_argument("--name", help="Slug do dataset")
+    p_probe.add_argument("--limit", type=int, help="Limita quantidade de recursos")
+    p_probe.set_defaults(func=cmd_probe)
 
+    ef = sub.add_parser("enrich-files", help="Download+SHA+columns for priority datasets")
+    ef.add_argument("--name", help="Dataset slug (default: PRIORITY_DATASETS)")
+    ef.set_defaults(func=cmd_enrich_files)
     return p
 
 

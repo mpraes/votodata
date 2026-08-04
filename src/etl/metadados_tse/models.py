@@ -27,7 +27,10 @@ class Recurso(BaseModel):
     created_at_origem: datetime | None = None
     last_modified_origem: datetime | None = None
     colunas: list[RecursoColuna] = Field(default_factory=list)
-
+    etag: str | None = None
+    local_path: str | None = None
+    last_probed_at: datetime | None = None
+    last_enriched_at: datetime | None = None
 
 class DatasetCore(BaseModel):
     id: UUID

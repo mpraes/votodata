@@ -1,4 +1,4 @@
-.PHONY: help smoke-models ddl check-conn smoke-api smoke-transform smoke-validate smoke-persist extract-meta load-meta
+.PHONY: help smoke-models ddl check-conn smoke-api smoke-transform smoke-validate smoke-persist extract-meta load-meta probe-meta enrich-files-meta
 
 PYTHON := uv run python
 PIPE   := src/etl/metadados_tse
@@ -13,8 +13,8 @@ help:
 	@echo "smoke-validate  - valida validação de dados"
 	@echo "smoke-persist   - valida persistência de dados"
 	@echo "smoke-html      - valida extração de informações adicionais"
-	@echo "extract-meta    - extrai metadados TSE (use ARGS='--limit 5')"
-	@echo "load-meta       - carrega out/ no Postgres"
+	@echo "probe-meta      - HEAD nos recursos (status/tamanho/etag)"
+	@echo "enrich-files-meta - download+SHA+columns for priority datasets"
 
 check-conn:
 	@set -a && . ./.env && set +a && \
@@ -58,3 +58,9 @@ smoke-persist:
 
 smoke-html:
 	cd $(PIPE) && uv run --project ../.. python -c "from extract_html import scrape_informacoes_adicionais; d=scrape_informacoes_adicionais('candidatos-2026'); print(sorted(d.keys())); print(d.get('Área Gestora'), d.get('Escopo Geopolítico'))"
+
+probe-meta:
+	set -a && . ./.env && set +a && cd $(PIPE) && uv run --project ../.. python cli.py probe $(ARGS)
+
+enrich-files-meta:
+	set -a && . ./.env && set +a && cd $(PIPE) && uv run --project ../.. python cli.py enrich-files $(ARGS)
