@@ -21,10 +21,12 @@
         <a href="/tse/about" class="{% if section == 'about' %}is-active{% endif %}">Sobre</a>
       </nav>
     </div>
-    <div class="boletim-strip" aria-hidden="true">
-      <span>JE</span>
-      <span>CATÁLOGO</span>
-      <span>DADOS ABERTOS</span>
+    <div class="site-meta">
+      <div class="shell site-meta-inner">
+        <span class="meta-item mono">schema dados_tse</span>
+        <span class="meta-item">fonte Dados Abertos TSE</span>
+        <span class="meta-item">somente leitura</span>
+      </div>
     </div>
   </header>
 
@@ -37,5 +39,6 @@
       <p>VotoData — leitura do schema <code>dados_tse</code>. Acesso local / Tailscale.</p>
     </div>
   </footer>
+  <script src="/static/js/info-tips.js" defer></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import h2_info %}
 {% block title %}{{ dataset.titulo }} · VotoData{% endblock %}
 {% block content %}
 <p class="crumb">
@@ -16,7 +17,7 @@
 
 <div class="stack">
   <section>
-    <h2>Negócio</h2>
+    {{ h2_info("negocio", "Negócio", "Contexto de domínio: o que é o dataset, quem gestiona, escopo geográfico e contato publicados no portal.") }}
     <dl class="kv">
       <dt>Área gestora</dt><dd>{{ dataset.area_gestora or "—" }}</dd>
       <dt>Escopo</dt><dd>{{ dataset.escopo_geopolitico or "—" }}</dd>
@@ -26,7 +27,7 @@
   </section>
 
   <section>
-    <h2>Técnico</h2>
+    {{ h2_info("tecnico", "Técnico", "URLs do portal/API, licença, origem sistêmica e como o ETL extraiu (API pura ou com fallback HTML).") }}
     <dl class="kv">
       <dt>Portal</dt><dd><a href="{{ dataset.url_portal }}">{{ dataset.url_portal }}</a></dd>
       <dt>API</dt><dd><a href="{{ dataset.url_api_package }}">package_show</a></dd>
@@ -38,7 +39,7 @@
   </section>
 
   <section>
-    <h2>Operacional</h2>
+    {{ h2_info("operacional", "Operacional", "Datas e cadência declaradas pelo TSE, mais o momento em que o VotoData coletou estes metadados.") }}
     <dl class="kv">
       <dt>Criado (TSE)</dt><dd class="mono">{{ dataset.criado_em or "—" }}</dd>
       <dt>Modificado</dt><dd class="mono">{{ dataset.modificado_em or "—" }}</dd>
@@ -49,7 +50,7 @@
   </section>
 
   <section>
-    <h2>Referência</h2>
+    {{ h2_info("referencia", "Referência", "Taxonomia CKAN: grupos temáticos, tags e identificador da organização no portal.") }}
     <dl class="kv">
       <dt>Grupos</dt><dd class="mono">{{ dataset.groups|join(", ") if dataset.groups else "—" }}</dd>
       <dt>Tags</dt><dd class="mono">{{ dataset.tags|join(", ") if dataset.tags else "—" }}</dd>
@@ -58,7 +59,7 @@
   </section>
 
   <section>
-    <h2>Recursos</h2>
+    {{ h2_info("recursos", "Recursos", "Arquivos baixáveis do dataset (ZIP/CSV/PDF…). Status, tamanho e SHA vêm do probe/enrich na CDN.") }}
     <table class="data-table">
       <thead>
         <tr>
