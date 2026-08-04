@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Grupos TSE · VotoData{% endblock %}
+{% block content %}
+<p class="crumb"><a href="/tse">Metadados TSE</a> / grupos</p>
+<section class="hero">
+  <h1>Grupos temáticos</h1>
+  <p>Taxonomia CKAN do portal de Dados Abertos do TSE.</p>
+</section>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Grupo</th>
+      <th>Datasets</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for g in groups %}
+    <tr>
+      <td><a class="mono" href="/tse/groups/{{ g.slug }}">{{ g.slug }}</a></td>
+      <td class="mono">{{ g.dataset_count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

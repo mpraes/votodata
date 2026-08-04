@@ -49,6 +49,16 @@ Validação operacional já executada: extract `ok=172 fail=0`; load `ok=171 ski
 
 Alinha com [governança/linhagem](docs/governanca_linhagem_qualidade.md) (origem, run_id, datas) e com a fonte primária do [catálogo](docs/catalogo_fontes_dados.md).
 
+### Catálogo web (`src/web/`)
+
+App FastAPI + Jinja2 (read-only) sobre `dados_tse`: home VotoData + seção **Metadados TSE** em `/tse/...` (grupos, datasets, recursos/colunas, saúde, about).
+
+```bash
+make web   # http://127.0.0.1:8000
+```
+
+Bind em `127.0.0.1` (homelab / Tailscale). Sem login no MVP.
+
 ### Tooling e governança de repo
 
 - Python com **uv** na raiz (`pyproject.toml` / `uv.lock`)
@@ -90,16 +100,27 @@ make extract-meta    # gera JSON em src/etl/metadados_tse/out/
 make load-meta       # upsert em dados_tse
 ```
 
+Explorar no browser (após carga + probe/enrich):
+
+```bash
+make web
+```
+
 ## Estrutura relevante
 
 ```text
 votodata/
 ├── docs/                          # documentação de produto e operação
-├── src/etl/metadados_tse/         # ETL de metadados TSE (entregue)
+├── src/etl/metadados_tse/         # ETL de metadados TSE
 │   ├── sql/001_dados_tse_metadados.sql
 │   ├── tse_datasets_inventory.json
 │   ├── tse_download_manifest.jsonl
 │   └── out/                       # artefatos gerados (ignorados no git)
+├── src/web/                       # app HTTP (home + /tse catálogo)
+│   ├── app.py
+│   ├── tse/                       # queries + router da seção TSE
+│   ├── templates/
+│   └── static/css/app.css
 ├── Makefile
 ├── pyproject.toml
 └── .env.example
@@ -109,16 +130,15 @@ votodata/
 
 Ordenado do mais próximo ao roadmap da [arquitetura](docs/arquitetura.md):
 
-1. **Download dos recursos TSE** — baixar ZIPs/CSVs do manifest; preencher `recurso.hash_conteudo` e `status_link` (HEAD/ETag/404).
-2. **Dicionário de colunas** — popular `recurso_coluna` a partir de schema CKAN ou amostra dos CSVs (hoje a tabela existe; na maioria dos datasets a API não envia schema).
-3. **Camada bronze (MinIO)** — ingestão bruta dos arquivos no data lake, conforme [arquitetura](docs/arquitetura.md).
-4. **Silver / DQ de conteúdo** — Polars/DuckDB, regras de completude/unicidade, quarentena ([governança](docs/governanca_linhagem_qualidade.md)).
-5. **Gold + Metabase** — modelos analíticos e dashboards.
-6. **Orquestração Prefect** — agendar `extract`/`load` e futuros pipes ([operações](docs/operacoes_pipelines.md)).
-7. **Outras fontes** — Transparência, Compras.gov, APIs legislativas, notícias ([catálogo](docs/catalogo_fontes_dados.md)).
-8. **Acesso remoto** — Tailscale/Ngrok e hardening ([segurança](docs/seguranca_e_gerenciamento.md)).
+1. **Enrich além dos prioritários** — SHA/colunas para mais datasets; parse de `leia-me.pdf` para descrições de colunas.
+2. **Camada bronze (MinIO)** — ingestão bruta dos arquivos no data lake, conforme [arquitetura](docs/arquitetura.md).
+3. **Silver / DQ de conteúdo** — Polars/DuckDB, regras de completude/unicidade, quarentena ([governança](docs/governanca_linhagem_qualidade.md)).
+4. **Gold + Metabase** — modelos analíticos e dashboards.
+5. **Orquestração Prefect** — agendar `extract`/`load`/`probe`/`enrich` ([operações](docs/operacoes_pipelines.md)).
+6. **Outras seções do app web** — Transparência, notícias, etc. ([catálogo](docs/catalogo_fontes_dados.md)).
+7. **Acesso remoto** — Tailscale/Ngrok e hardening ([segurança](docs/seguranca_e_gerenciamento.md)).
 
-Fora do escopo do MVP de metadados (e ainda não iniciado): frontend embutível, NLP/ML sobre notícias.
+Fora do escopo do MVP de metadados: SPA/HTMX avançado, preview de linhas CSV, auth na UI.
 
 ## Fluxo de contribuição
 

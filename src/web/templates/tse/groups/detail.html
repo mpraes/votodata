@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ slug }} · Grupos TSE{% endblock %}
+{% block content %}
+<p class="crumb">
+  <a href="/tse">Metadados TSE</a> /
+  <a href="/tse/groups">grupos</a> /
+  <span class="mono">{{ slug }}</span>
+</p>
+<section class="hero">
+  <h1 class="mono">{{ slug }}</h1>
+  <p>{{ datasets|length }} dataset(s) neste grupo.</p>
+</section>
+
+<form class="filters" method="get">
+  <label>
+    Busca
+    <input type="search" name="q" value="{{ q }}" placeholder="slug ou título">
+  </label>
+  <label>
+    Frequência
+    <select name="frequency">
+      <option value="">Todas</option>
+      {% for f in frequencies %}
+      <option value="{{ f }}" {% if f == frequency %}selected{% endif %}>{{ f }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button class="btn" type="submit">Filtrar</button>
+</form>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Slug</th>
+      <th>Título</th>
+      <th>Frequência</th>
+      <th>Área</th>
+      <th>Ativos</th>
+      <th>SHA</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in datasets %}
+    <tr>
+      <td><a class="mono" href="/tse/datasets/{{ d.name }}">{{ d.name }}</a></td>
+      <td>{{ d.titulo }}</td>
+      <td>{{ d.frequencia_atualizacao or "—" }}</td>
+      <td>{{ d.area_gestora or "—" }}</td>
+      <td class="mono">{{ d.active_resources }}/{{ d.num_resources or "—" }}</td>
+      <td class="mono">{{ d.with_sha }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">Nenhum dataset com esses filtros.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

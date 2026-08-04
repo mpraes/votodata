@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Saúde dos arquivos · VotoData{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Saúde dos arquivos</h1>
+  <p>Status dos links na CDN, integridade (SHA) dos prioritários e últimas execuções do pipeline.</p>
+</section>
+
+<section class="section">
+  <h2>Status dos links</h2>
+  {% set max_s = health.status_links[0].count if health.status_links else 1 %}
+  <ul class="bar-list">
+    {% for row in health.status_links %}
+    <li>
+      <div>
+        <div><span class="badge badge-{{ row.label }}">{{ row.label }}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (row.count / max_s * 100)|round }}%"></div></div>
+      </div>
+      <span class="mono">{{ row.count }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section">
+  <h2>Checklist prioritários (SHA)</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Dataset</th>
+        <th>Recursos</th>
+        <th>Com SHA</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in health.priorities %}
+      <tr>
+        <td><a class="mono" href="/tse/datasets/{{ row.name }}">{{ row.name }}</a></td>
+        <td class="mono">{{ row.resources }}</td>
+        <td class="mono">{{ row.with_sha }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="section">
+  <h2>Problemas (até 50)</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Dataset</th>
+        <th>Recurso</th>
+        <th>Status</th>
+        <th>URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in health.problems %}
+      <tr>
+        <td><a class="mono" href="/tse/datasets/{{ row.dataset_name }}">{{ row.dataset_name }}</a></td>
+        <td><a href="/tse/datasets/{{ row.dataset_name }}/resources/{{ row.resource_id }}">{{ row.resource_name or row.resource_id }}</a></td>
+        <td><span class="badge badge-{{ row.status_link }}">{{ row.status_link }}</span></td>
+        <td class="mono"><a href="{{ row.url }}">link</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">Nenhum recurso fora de <code>active</code>.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="section">
+  <h2>Pipeline runs</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Stage</th>
+        <th>Status</th>
+        <th>Início</th>
+        <th>Ok</th>
+        <th>Fail</th>
+        <th>Skip</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for run in health.last_runs %}
+      <tr>
+        <td class="mono">{{ run.stage }}</td>
+        <td>{{ run.status }}</td>
+        <td class="mono">{{ run.started_at }}</td>
+        <td class="mono">{{ run.datasets_ok }}</td>
+        <td class="mono">{{ run.datasets_fail }}</td>
+        <td class="mono">{{ run.datasets_skipped }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
