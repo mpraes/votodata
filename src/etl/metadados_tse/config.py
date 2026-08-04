@@ -12,3 +12,14 @@ SQL_DIR = BASE_DIR / "sql"
 TSE_BASE_URL = os.getenv("TSE_BASE_URL", "https://dadosabertos.tse.jus.br").rstrip("/")
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 REQUEST_SLEEP_SECONDS = float(os.getenv("REQUEST_SLEEP_SECONDS", "0.3"))
+
+CACHE_DIR = Path(os.getenv("VOTODATA_CACHE_DIR", str(BASE_DIR / "cache")))
+PROBE_SLEEP_SECONDS = float(os.getenv("PROBE_SLEEP_SECONDS", str(REQUEST_SLEEP_SECONDS)))
+
+PRIORITY_DATASETS = (
+    "candidatos-2026",
+    "pesquisas-eleitorais-2026",
+    "eleitorado-2026",
+    "eleitorado-atual",
+    "prestacao-de-contas-partidarias-2026",
+)

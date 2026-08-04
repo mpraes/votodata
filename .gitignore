@@ -6,3 +6,7 @@ src/etl/metadados_tse/out/
 
 __pycache__/
 *.py[cod]
+
+src/etl/metadados_tse/cache/
+
+cache/
